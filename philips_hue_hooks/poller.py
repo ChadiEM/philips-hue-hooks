@@ -6,6 +6,8 @@ import requests
 from philips_hue_hooks.sensors.motion_sensor import MotionSensor
 from philips_hue_hooks.sensors.switch import Switch
 
+LOG = logging.getLogger(__name__)
+
 
 def create_sensor(sensor_id, json):
     if json['type'] == 'CLIPGenericStatus':
@@ -46,6 +48,6 @@ class Poller:
                         try:
                             action.invoke(current_sensor.get_sensor_id(), updated_state)
                         except Exception as exp:
-                            logging.warning('Unable to execute %s, error = %s', action, exp)
+                            LOG.warning('Unable to execute %s, error = %s', action, exp)
 
             time.sleep(self.poll_delay)

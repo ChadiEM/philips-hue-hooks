@@ -1,14 +1,18 @@
+import logging
+
 import configargparse
 
-from philips_hue_hooks.action.print_action import PrintAction
+from philips_hue_hooks.action.print_action import LogAction
 from philips_hue_hooks.action.webhook_action import WebHookAction
+from philips_hue_hooks.discovery.hue_discovery import NetworkBridgeDiscovery
 from philips_hue_hooks.poller import Poller
+
+LOG = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     parser = configargparse.ArgParser(description='Hook Arguments')
 
     parser.add('--bridge-host',
-               required=True,
                env_var='BRIDGE_HOST',
                help='Hostname/IP address to poll on (for example: 192.168.0.17)')
     parser.add('--username',
@@ -26,14 +30,22 @@ if __name__ == '__main__':
 
     args = parser.parse_known_args()[0]
 
-    host = args.bridge_host
     username = args.username
     sensor_id = [int(i) for i in args.sensor_ids.split(',')]
 
     actions = []
 
+    host = args.bridge_host
+    if host is None:
+        LOG.info("No bridge host provided.")
+
+        host = NetworkBridgeDiscovery().discover()
+
+        if host is None:
+            raise ValueError('Unable to find Hue bridge host')
+
     if args.target is None:
-        actions.append(PrintAction())
+        actions.append(LogAction())
     else:
         for target in args.target:
             actions.append(WebHookAction(target))
