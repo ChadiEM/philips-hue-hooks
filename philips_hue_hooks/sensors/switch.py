@@ -1,15 +1,12 @@
 from enum import unique, Enum
 
-from philips_hue_hooks.sensors.sensor import Sensor
+from philips_hue_hooks.device import Device
 
 
-class Switch(Sensor):
-    def __init__(self, sensor_id):
-        super().__init__(sensor_id)
+class Switch(Device):
+    def __init__(self, sensor_id, sensor_category):
+        super().__init__("sensor", sensor_id, sensor_category)
         self.state = None
-
-    def get_type(self):
-        return 'switch'
 
     def update(self, json):
         state_from_json = json['state']['buttonevent']

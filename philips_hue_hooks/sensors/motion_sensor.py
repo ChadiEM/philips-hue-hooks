@@ -1,15 +1,12 @@
 from enum import Enum, unique
 
-from philips_hue_hooks.sensors.sensor import Sensor
+from philips_hue_hooks.device import Device
 
 
-class MotionSensor(Sensor):
-    def __init__(self, sensor_id):
-        super().__init__(sensor_id)
+class MotionSensor(Device):
+    def __init__(self, sensor_id, sensor_type):
+        super().__init__("sensor", sensor_id, sensor_type)
         self.state = None
-
-    def get_type(self):
-        return 'motion_sensor'
 
     def update(self, json):
         state_from_json = json['state']['status']
