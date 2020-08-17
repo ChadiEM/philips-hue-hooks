@@ -10,7 +10,10 @@ class MotionSensor(Device):
 
     def update(self, json):
         state_from_json = json['state']['status']
-        new_state = State(state_from_json)
+        try:
+            new_state = State(state_from_json)
+        except ValueError:
+            return "UNKNOWN_STATE"
 
         if self.state != new_state:
             self.state = new_state
