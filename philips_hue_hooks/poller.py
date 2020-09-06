@@ -3,15 +3,7 @@ import time
 
 import requests
 
-from philips_hue_hooks.lights.light import Light
-from philips_hue_hooks.noop_device import NoopDevice
-from philips_hue_hooks.sensors.daylight import Daylight
-from philips_hue_hooks.sensors.generic_flag import GenericFlag
-from philips_hue_hooks.sensors.generic_status import GenericStatus
-from philips_hue_hooks.sensors.lightlevel import LightLevel
-from philips_hue_hooks.sensors.presence import Presence
-from philips_hue_hooks.sensors.switch import Switch
-from philips_hue_hooks.sensors.temperature import Temperature
+from philips_hue_hooks.device import Device
 
 LOG = logging.getLogger(__name__)
 
@@ -72,29 +64,4 @@ class Poller:
 
         LOG.info(f'Initializing {device_class} {device_id} ({device_name} / {device_type})...')
 
-        if device_type == 'Daylight':
-            return Daylight(device_id, device_name, device_type)
-
-        if device_type == 'CLIPGenericStatus':
-            return GenericStatus(device_id, device_name, device_type)
-
-        if device_type == 'CLIPGenericFlag':
-            return GenericFlag(device_id, device_name, device_type)
-
-        if device_type == 'ZLLSwitch':
-            return Switch(device_id, device_name, device_type)
-
-        if device_type == 'ZLLLightLevel':
-            return LightLevel(device_id, device_name, device_type)
-
-        if device_type == 'ZLLPresence':
-            return Presence(device_id, device_name, device_type)
-
-        if device_type == 'ZLLTemperature':
-            return Temperature(device_id, device_name, device_type)
-
-        if device_type == 'Dimmable light' or device_type == 'Extended color light':
-            return Light(device_id, device_name, device_type)
-
-        LOG.warning(f'Unable to listen to changes on {device_class} {device_id} ({device_name} / {device_type})')
-        return NoopDevice()
+        return Device(device_class, device_id, device_name, device_type)
