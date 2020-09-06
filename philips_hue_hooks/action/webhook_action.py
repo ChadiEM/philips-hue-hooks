@@ -10,12 +10,13 @@ class WebHookAction(Action):
     def __str__(self):
         return f'WebHook at {self.post_url}'
 
-    def invoke(self, device_class, device_id, device_type, new_state):
+    def invoke(self, device_class, device_id, device_name, device_type, new_state):
         state = new_state.name.lower()
 
         requests.post(self.post_url, json={
             'class': device_class,
             'id': device_id,
+            'name': device_name,
             'type': device_type,
             'state': state
         })

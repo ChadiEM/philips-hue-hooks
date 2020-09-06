@@ -5,8 +5,13 @@ import requests
 
 from philips_hue_hooks.lights.light import Light
 from philips_hue_hooks.noop_device import NoopDevice
-from philips_hue_hooks.sensors.motion_sensor import MotionSensor
+from philips_hue_hooks.sensors.daylight import Daylight
+from philips_hue_hooks.sensors.generic_flag import GenericFlag
+from philips_hue_hooks.sensors.generic_status import GenericStatus
+from philips_hue_hooks.sensors.lightlevel import LightLevel
+from philips_hue_hooks.sensors.presence import Presence
 from philips_hue_hooks.sensors.switch import Switch
+from philips_hue_hooks.sensors.temperature import Temperature
 
 LOG = logging.getLogger(__name__)
 
@@ -52,25 +57,44 @@ class Poller:
         if updated_state is not None:
             for action in self.actions:
                 try:
-                    action.invoke(current_device.get_device_class(), current_device.get_device_id(),
-                                  current_device.get_device_type(), updated_state)
+                    action.invoke(current_device.get_device_class(),
+                                  current_device.get_device_id(),
+                                  current_device.get_device_name(),
+                                  current_device.get_device_type(),
+                                  updated_state)
                 except Exception as exp:
                     LOG.warning('Unable to execute %s, error = %s', action, exp)
 
     @staticmethod
     def create_device(device_class, device_id, json):
+        device_name = json['name']
         device_type = json['type']
 
-        LOG.info(f'Initializing {device_class} {device_id} ({device_type})...')
+        LOG.info(f'Initializing {device_class} {device_id} ({device_name} / {device_type})...')
+
+        if device_type == 'Daylight':
+            return Daylight(device_id, device_name, device_type)
 
         if device_type == 'CLIPGenericStatus':
-            return MotionSensor(device_id, device_type)
+            return GenericStatus(device_id, device_name, device_type)
+
+        if device_type == 'CLIPGenericFlag':
+            return GenericFlag(device_id, device_name, device_type)
 
         if device_type == 'ZLLSwitch':
-            return Switch(device_id, device_type)
+            return Switch(device_id, device_name, device_type)
+
+        if device_type == 'ZLLLightLevel':
+            return LightLevel(device_id, device_name, device_type)
+
+        if device_type == 'ZLLPresence':
+            return Presence(device_id, device_name, device_type)
+
+        if device_type == 'ZLLTemperature':
+            return Temperature(device_id, device_name, device_type)
 
         if device_type == 'Dimmable light' or device_type == 'Extended color light':
-            return Light(device_id, device_type)
+            return Light(device_id, device_name, device_type)
 
-        LOG.warning(f'Unable to listen to changes on {device_class} {device_id} ({device_type})')
+        LOG.warning(f'Unable to listen to changes on {device_class} {device_id} ({device_name} / {device_type})')
         return NoopDevice()

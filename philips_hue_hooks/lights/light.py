@@ -4,8 +4,8 @@ from philips_hue_hooks.device import Device
 
 
 class Light(Device):
-    def __init__(self, light_id, light_type):
-        super().__init__("light", light_id, light_type)
+    def __init__(self, light_id, light_name, light_type):
+        super().__init__('light', light_id, light_name, light_type)
         self.state = None
 
     def update(self, json):

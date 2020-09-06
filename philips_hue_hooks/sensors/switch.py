@@ -4,8 +4,8 @@ from philips_hue_hooks.device import Device
 
 
 class Switch(Device):
-    def __init__(self, sensor_id, sensor_category):
-        super().__init__("sensor", sensor_id, sensor_category)
+    def __init__(self, sensor_id, sensor_name, sensor_category):
+        super().__init__('sensor', sensor_id, sensor_name, sensor_category)
         self.state = None
 
     def update(self, json):
