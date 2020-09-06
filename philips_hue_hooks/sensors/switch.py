@@ -21,7 +21,12 @@ class Switch(Device):
 
 @unique
 class SwitchState(Enum):
+    UNKNOWN = -1
     ON = 1
     BRIGHTNESS_UP = 2
     BRIGHTNESS_DOWN = 3
     OFF = 4
+
+    @classmethod
+    def _missing_(cls, value):
+        return SwitchState.UNKNOWN

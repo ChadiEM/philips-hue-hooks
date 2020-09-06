@@ -21,6 +21,11 @@ class MotionSensor(Device):
 
 @unique
 class State(Enum):
+    UNKNOWN = -1
     OFF = 0
     ON = 1
     TURNING_OFF = 2
+
+    @classmethod
+    def _missing_(cls, value):
+        return State.UNKNOWN
